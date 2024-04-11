@@ -21,13 +21,19 @@ add-apt-repository -y ppa:jonathonf/gcc-7.1 > /dev/null 2>&1
 apt-get update > /dev/null 2>&1
 apt-get install -y libmicrohttpd-dev > /dev/null 2>&1
 
+# Fetching Latest XMRig Version
+clear
+echo -e "\e[93m              Fetching Latest XMRig               "
+latest_version=$(curl -s "https://api.github.com/repos/xmrig/xmrig/releases/latest" | grep -oP '"tag_name": "\K(.*)(?=")')
+download_url="https://github.com/xmrig/xmrig/releases/download/${latest_version}/xmrig-${latest_version}-linux-x64.tar.gz"
+
 # Install XMRIG Binary
 clear
 echo -e "\e[93m             Installing XMRIG Binary              "
 cd /tmp
-wget --quiet https://github.com/xmrig/xmrig/releases/download/v6.12.1/xmrig-6.12.1-linux-x64.tar.gz
-tar -xf xmrig-6.12.1-linux-x64.tar.gz
-mv xmrig-6.12.1/xmrig /usr/local/bin/xmrig
+wget --quiet $download_url
+tar -xf xmrig-${latest_version}-linux-x64.tar.gz
+mv xmrig-${latest_version}/xmrig /usr/local/bin/xmrig
 chmod +x /usr/local/bin/xmrig
 
 # Setting Up Config

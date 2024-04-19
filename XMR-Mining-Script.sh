@@ -16,15 +16,15 @@ sudo apt install -y git build-essential cmake libuv1-dev libssl-dev libhwloc-dev
 git clone https://github.com/xmrig/xmrig.git
 
 # Enter the xmrig directory
-cd xmrig
+cd xmrig || exit
 
 # Build the miner
-mkdir build && cd build
+mkdir build && cd build || exit
 cmake ..
-make -j$(nproc)
+make -j"$(nproc)"
 
 # Create the config file
-cat << EOF > config.json
+cat << 'EOF' > config.json
 {
     "autosave": true,
     "donate-level": 0,
@@ -51,11 +51,8 @@ cat << EOF > config.json
 }
 EOF
 
-# Run the miner
-./xmrig
-
-# Ensure the script is executable
-chmod +x start_mining.sh
+# Ensure the script is executable (commented out since it's not necessary here)
+# chmod +x start_mining.sh
 
 # Start mining
-./start_mining.sh
+./xmrig

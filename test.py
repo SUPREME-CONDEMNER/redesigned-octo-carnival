@@ -24,17 +24,9 @@ def create_chrome_profile(profile_dir):
     os.makedirs(profile_dir, exist_ok=True)
     return profile_dir
 
-from pyvirtualdisplay import Display
-
 def install_tampermonkey(profile_dir):
     print("Installing Tampermonkey extension...")
-    tampermonkey_url = "https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo"
-    
-    # Start virtual display
-    display = Display(visible=0, size=(1920, 1080))  # Adjust size as needed
-    display.start()
-    
-    # Install Tampermonkey extension
+    tampermonkey_url = "https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo"  # Tampermonkey Chrome Web Store URL
     subprocess.check_call(["google-chrome", "--no-first-run", "--no-default-browser-check", "--user-data-dir=" + profile_dir, "--install-extension=" + tampermonkey_url])
 
 def install_userscript(profile_dir):

@@ -1,10 +1,4 @@
 import os
-
-# Add this line at the beginning of your script
-os.environ['DBUS_SESSION_BUS_ADDRESS'] = ''
-
-# Then proceed with the rest of your script as before
-import os
 import platform
 import subprocess
 import sys

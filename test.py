@@ -6,9 +6,6 @@ import shutil
 import zipfile
 from pathlib import Path
 
-# Rest of your script...
-
-
 def install_chrome():
     print("Installing Google Chrome...")
     if platform.system() == 'Linux':

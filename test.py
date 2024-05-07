@@ -24,20 +24,23 @@ def create_chrome_profile(profile_dir):
     os.makedirs(profile_dir, exist_ok=True)
     return profile_dir
 
+from pyvirtualdisplay import Display
+
 def install_tampermonkey(profile_dir):
     print("Installing Tampermonkey extension...")
-    tampermonkey_url = "https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo"  # Tampermonkey Chrome Web Store URL
-    subprocess.check_call(["google-chrome", "--headless", "--disable-gpu", "--no-first-run", "--no-default-browser-check", "--user-data-dir=" + profile_dir, "--install-extension=" + tampermonkey_url])
+    tampermonkey_url = "https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo"
+    
+    # Start virtual display
+    display = Display(visible=0, size=(1920, 1080))  # Adjust size as needed
+    display.start()
+    
+    # Install Tampermonkey extension
+    subprocess.check_call(["google-chrome", "--no-first-run", "--no-default-browser-check", "--user-data-dir=" + profile_dir, "--install-extension=" + tampermonkey_url])
+
 def install_userscript(profile_dir):
     print("Installing userscript...")
     userscript_url = "https://gist.github.com/origamiofficial/2557dd47fb0aaf08e3c298a236bfa14d/raw/6673c45ca583410d8e7a4639b6fcd954aabf67da/Recaptcha%2520Solver%2520(Automatically%2520solves%2520Recaptcha%2520in%2520browser).user.js"
-    # Ensure the Extensions directory exists
-    extensions_dir = os.path.join(profile_dir, "Extensions", "kebgndikjjkabgoccdakhmlahpbghcfp", "0.1.0_0")
-    os.makedirs(extensions_dir, exist_ok=True)
-    
-    userscript_path = os.path.join(extensions_dir, "user.js")
-    
-    # Download and save the userscript
+    userscript_path = os.path.join(profile_dir, "Extensions", "kebgndikjjkabgoccdakhmlahpbghcfp", "0.1.0_0", "user.js")
     subprocess.check_call(["curl", "-o", userscript_path, userscript_url])
 
 def install_selenium_and_webdriver():

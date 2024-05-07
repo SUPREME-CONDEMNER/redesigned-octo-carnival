@@ -5,8 +5,6 @@ import sys
 import shutil
 import zipfile
 from pathlib import Path
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 
 def install_chrome():
     print("Installing Google Chrome...")
@@ -75,15 +73,6 @@ def install_selenium_and_webdriver():
 
     # Create a new Chrome profile
     profile_dir = create_chrome_profile(os.path.join(current_dir, "chrome_profile"))
-
-    # Set Chrome options for headless mode
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")  # This line enables headless mode
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-
-    # Initialize Chrome WebDriver with headless mode
-    driver = webdriver.Chrome(options=chrome_options)
 
     # Install Tampermonkey extension
     install_tampermonkey(profile_dir)

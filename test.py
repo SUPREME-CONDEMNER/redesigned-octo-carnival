@@ -7,7 +7,6 @@ import zipfile
 from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from pyvirtualdisplay import Display
 
 def install_chrome():
     print("Installing Google Chrome...")
@@ -83,21 +82,14 @@ def install_selenium_and_webdriver():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
-    # Initialize virtual display
-    display = Display(visible=0, size=(800, 600))
-    display.start()
-
     # Initialize Chrome WebDriver with headless mode
-    driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(executable_path=chromedriver_path, options=chrome_options)
 
     # Install Tampermonkey extension
     install_tampermonkey(profile_dir)
 
     # Install userscript with Tampermonkey
     install_userscript(profile_dir)
-
-    # Stop virtual display
-    display.stop()
 
 if __name__ == "__main__":
     install_selenium_and_webdriver()

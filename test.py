@@ -27,8 +27,7 @@ def create_chrome_profile(profile_dir):
 def install_tampermonkey(profile_dir):
     print("Installing Tampermonkey extension...")
     tampermonkey_url = "https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo"  # Tampermonkey Chrome Web Store URL
-    subprocess.check_call(["google-chrome", "--no-first-run", "--no-default-browser-check", "--user-data-dir=" + profile_dir, "--install-extension=" + tampermonkey_url])
-
+    subprocess.check_call(["google-chrome", "--headless", "--disable-gpu", "--no-first-run", "--no-default-browser-check", "--user-data-dir=" + profile_dir, "--install-extension=" + tampermonkey_url])
 def install_userscript(profile_dir):
     print("Installing userscript...")
     userscript_url = "https://gist.github.com/origamiofficial/2557dd47fb0aaf08e3c298a236bfa14d/raw/6673c45ca583410d8e7a4639b6fcd954aabf67da/Recaptcha%2520Solver%2520(Automatically%2520solves%2520Recaptcha%2520in%2520browser).user.js"

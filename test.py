@@ -82,8 +82,11 @@ def install_selenium_and_webdriver():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
+    # Set ChromeDriver path in environment variable
+    os.environ["webdriver.chrome.driver"] = str(chromedriver_path)
+
     # Initialize Chrome WebDriver with headless mode
-    driver = webdriver.Chrome(executable_path=chromedriver_path, options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options)
 
     # Install Tampermonkey extension
     install_tampermonkey(profile_dir)

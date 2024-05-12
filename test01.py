@@ -12,8 +12,11 @@ def install_tampermonkey_selenium(profile_dir):
     chrome_options.add_argument("--no-default-browser-check")
     chrome_options.add_argument(f"--user-data-dir={profile_dir}")
 
+    # Specify the correct path to ChromeDriver executable
+    chrome_driver_path = "./chromedriver"
+
     # Start Chrome with Selenium
-    chrome_service = Service("/path/to/chromedriver")
+    chrome_service = Service(chrome_driver_path)
     chrome_service.start()
     driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
 

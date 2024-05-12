@@ -1,16 +1,25 @@
 #!/bin/bash
 
-# Define the Chrome extension URL
-extension_url="https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag"
+# Define the base directory for Chrome profiles
+BASE_DIR="$HOME/chrome-profiles"
 
-# Loop through each user profile and install the extension
-for i in {1..10}
-do
-    profile_path="/home/user$i/.config/google-chrome/Default/Extensions"
-    profile_user="user$i"
-    sudo -u $profile_user mkdir -p $profile_path
-    sudo -u $profile_user wget -O /tmp/violentmonkey.zip $extension_url
-    sudo -u $profile_user unzip /tmp/violentmonkey.zip -d $profile_path
-    sudo -u $profile_user rm /tmp/violentmonkey.zip
-    echo "Violentmonkey extension installed for user$i."
+# Loop through each profile directory
+for i in {1..5}; do
+    PROFILE_DIR="$BASE_DIR/profile$i"
+
+    # Install Violentmonkey extension
+    curl -L -o "$PROFILE_DIR/violentmonkey.zip" "https://github.com/violentmonkey/violentmonkey/releases/latest/download/violentmonkey.zip"
+    unzip -q "$PROFILE_DIR/violentmonkey.zip" -d "$PROFILE_DIR"
+    google-chrome --user-data-dir="$PROFILE_DIR" --load-extension="$PROFILE_DIR/violentmonkey" &
+
+    # Install userscripts using Violentmonkey API
+    sleep 5  # Wait for Chrome to start
+    cat <<EOF | google-chrome --user-data-dir="$PROFILE_DIR" --new-window --no-first-run --no-default-browser-check "https://violentmonkey.github.io/get-it/"
+{
+  "install_from_url": [
+    "https://example.com/userscript1.user.js",
+    "https://example.com/userscript2.user.js"
+  ]
+}
+EOF
 done

@@ -5,6 +5,9 @@ import sys
 import shutil
 import zipfile
 from pathlib import Path
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 
 def install_chrome():
     print("Installing Google Chrome...")
@@ -27,7 +30,7 @@ def create_chrome_profile(profile_dir):
 def install_tampermonkey(profile_dir):
     print("Installing Tampermonkey extension...")
     tampermonkey_url = "https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo"  # Tampermonkey Chrome Web Store URL
-    subprocess.check_call(["google-chrome", "--no-first-run", "--no-default-browser-check", "--user-data-dir=" + profile_dir, "--install-extension=" + tampermonkey_url])
+    subprocess.check_call(["google-chrome", "--headless", "--no-first-run", "--no-default-browser-check", "--user-data-dir=" + profile_dir, "--install-extension=" + tampermonkey_url])
 
 def install_userscript(profile_dir):
     print("Installing userscript...")
@@ -79,6 +82,25 @@ def install_selenium_and_webdriver():
 
     # Install userscript with Tampermonkey
     install_userscript(profile_dir)
+
+    # Configure and run Selenium with headless Chrome
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Run Chrome in headless mode
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument(f"--user-data-dir={profile_dir}")
+
+    service = Service(str(chromedriver_path))
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+
+    # Example action: open a webpage
+    driver.get('https://www.example.com')
+    print(driver.title)
+
+    # Close the browser
+    driver.quit()
 
 if __name__ == "__main__":
     install_selenium_and_webdriver()

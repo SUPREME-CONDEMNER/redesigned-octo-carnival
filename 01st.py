@@ -1,34 +1,44 @@
 import os
 import subprocess
-import sys
-import urllib.request
+import json
 
-def ensure_policy_directory_exists():
-    policy_dir = "/etc/opt/chrome/policies/managed"
-    if not os.path.exists(policy_dir):
-        os.makedirs(policy_dir)
-        print(f"Created directory {policy_dir}")
-    else:
-        print(f"Directory {policy_dir} already exists")
+def run_command(command):
+    """Run a shell command."""
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    if process.returncode != 0:
+        raise Exception(f"Command failed with error: {stderr.decode().strip()}")
+    return stdout.decode().strip()
 
-def ensure_policy_file_exists():
-    policy_file_path = "/etc/opt/chrome/policies/managed/managed_extensions_policy.json"
-    policy_content = {
-        "ExtensionInstallForcelist": [
-            "jinjaccalgkegednnccohejagnlnfdag;https://clients2.google.com/service/update2/crx"
-        ]
-    }
-    import json
-    if not os.path.isfile(policy_file_path):
-        with open(policy_file_path, 'w') as policy_file:
-            json.dump(policy_content, policy_file, indent=2)
-        print(f"Created policy file {policy_file_path}")
-    else:
-        print(f"Policy file {policy_file_path} already exists")
+# 1. Download and install Google Chrome
+print("Downloading and installing Google Chrome...")
+run_command("wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O /tmp/google-chrome-stable_current_amd64.deb")
+run_command("sudo dpkg -i /tmp/google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y")
 
-def main():
-    ensure_policy_directory_exists()
-    ensure_policy_file_exists()
+# 2. Install Selenium and Chrome WebDriver
+print("Installing Selenium and Chrome WebDriver...")
+run_command("pip install selenium")
+run_command("sudo apt-get install -y chromium-chromedriver")
 
-if __name__ == "__main__":
-    main()
+# 3. Create the Chrome policies directory
+policy_dir = "/etc/opt/chrome/policies/managed"
+print(f"Creating directory {policy_dir}...")
+run_command(f"sudo mkdir -p {policy_dir}")
+
+# 4. Create managed_policies.json file
+policy_file_path = os.path.join(policy_dir, "managed_policies.json")
+policy_content = {
+    "PrivacySandboxSettingsEnabled": False,
+    "ExtensionInstallForcelist": [
+        "jinjaccalgkegednnccohejagnlnfdag;https://clients2.google.com/service/update2/crx"
+    ]
+}
+print(f"Creating policy file at {policy_file_path} with content:\n{json.dumps(policy_content, indent=4)}")
+with open("/tmp/managed_policies.json", 'w') as policy_file:
+    json.dump(policy_content, policy_file, indent=4)
+
+# Move the policy file to the correct location with appropriate permissions
+run_command(f"sudo mv /tmp/managed_policies.json {policy_file_path}")
+run_command(f"sudo chmod 644 {policy_file_path}")
+
+print("Setup completed successfully.")

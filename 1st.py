@@ -3,15 +3,6 @@ import subprocess
 import sys
 import urllib.request
 
-def ensure_chrome_driver_installed():
-    if not is_tool_installed("chromedriver"):
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "chromedriver-autoinstaller"])
-        import chromedriver_autoinstaller
-        chromedriver_autoinstaller.install()
-        print("Chrome WebDriver installed.")
-    else:
-        print("Chrome WebDriver is already installed.")
-
 def ensure_policy_directory_exists():
     policy_dir = "/etc/opt/chrome/policies/managed"
     if not os.path.exists(policy_dir):
@@ -36,7 +27,6 @@ def ensure_policy_file_exists():
         print(f"Policy file {policy_file_path} already exists")
 
 def main():
-    ensure_chrome_driver_installed()
     ensure_policy_directory_exists()
     ensure_policy_file_exists()
 

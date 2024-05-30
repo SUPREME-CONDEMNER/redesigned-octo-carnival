@@ -30,12 +30,7 @@ def getUserAgents(url):
 
 def createGmailAccount(driver, wait):
     try:
-        driver.get("https://www.gmail.com")
-
-        create_account_button = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id="yDmH0d"]/c-wiz/div/div[3]/div/div[2]/div/div/div[1]/div/button/span")))
-        create_account_button.click()
-
-        time.sleep(5)
+        driver.get("https://accounts.google.com/signup")
 
         first_name_text = random_string(8)
         last_name_text = random_string(10)
@@ -68,6 +63,7 @@ def createGmailAccount(driver, wait):
         print("An error occurred:", e)
         traceback.print_exc()
         return None
+
 
 def saveToTextFile(gmail_address, file_path):
     try:

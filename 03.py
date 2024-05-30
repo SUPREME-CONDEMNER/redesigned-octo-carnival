@@ -32,7 +32,7 @@ def createGmailAccount(driver, wait):
     try:
         driver.get("https://www.gmail.com")
 
-        create_account_button = wait.until(EC.presence_of_element_located((By.XPATH, "//a[text()='Create account']")))
+        create_account_button = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id="yDmH0d"]/c-wiz/div/div[3]/div/div[2]/div/div/div[1]/div/button/span")))
         create_account_button.click()
 
         time.sleep(5)

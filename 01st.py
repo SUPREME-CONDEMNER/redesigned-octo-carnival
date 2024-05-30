@@ -28,7 +28,7 @@ run_command(f"sudo mkdir -p {policy_dir}")
 # 4. Create managed_policies.json file
 policy_file_path = os.path.join(policy_dir, "managed_policies.json")
 policy_content = {
-    "PrivacySandboxSettingsEnabled": False,
+    "PrivacySandboxPromptEnabled": False,
     "ExtensionInstallForcelist": [
         "jinjaccalgkegednnccohejagnlnfdag;https://clients2.google.com/service/update2/crx"
     ]

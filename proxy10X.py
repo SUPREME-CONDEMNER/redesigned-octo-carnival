@@ -1,0 +1,128 @@
+import requests
+import socket
+import socks
+from urllib.parse import urlparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+# Function to check if an HTTP proxy is accessible without authentication for all websites
+def check_http_proxy(proxy, urls):
+    try:
+        proxies = {
+            "http": f"http://{proxy}"
+        }
+        for url in urls:
+            response = requests.get(url, proxies=proxies, timeout=5)
+            if response.status_code != 200:
+                return False
+        return True
+    except requests.exceptions.RequestException:
+        return False
+
+# Function to check if an HTTPS proxy is accessible without authentication for all websites
+def check_https_proxy(proxy, urls):
+    try:
+        proxies = {
+            "https": f"https://{proxy}"
+        }
+        for url in urls:
+            response = requests.get(url, proxies=proxies, timeout=5)
+            if response.status_code != 200:
+                return False
+        return True
+    except requests.exceptions.RequestException:
+        return False
+
+# Function to check if a SOCKS5 proxy is accessible without authentication for all websites
+def check_socks5_proxy(proxy, urls):
+    try:
+        ip, port = proxy.split(":")
+        socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, ip, int(port))
+        socket.socket = socks.socksocket
+        for url in urls:
+            parsed_url = urlparse(url)
+            host = parsed_url.hostname
+            port = parsed_url.port if parsed_url.port else (443 if parsed_url.scheme == 'https' else 80)
+            s = socket.socket()
+            s.settimeout(5)
+            s.connect((host, port))
+            s.sendall(b"GET / HTTP/1.1\r\nHost: " + host.encode() + b"\r\n\r\n")
+            response = s.recv(4096)
+            if b"200 OK" not in response:
+                return False
+        return True
+    except (socket.error, socks.ProxyError, socks.GeneralProxyError):
+        return False
+
+
+
+
+
+# URL of the text file containing proxies
+proxies_url = "https://raw.githubusercontent.com/SUPREME-CONDEMNER/redesigned-octo-carnival/main/socks4.txt"
+
+
+
+
+
+# Fetch proxies from URL
+response = requests.get(proxies_url)
+if response.status_code == 200:
+    proxies = response.text.splitlines()
+else:
+    print("Failed to fetch proxy list")
+    proxies = []
+
+# List of websites to check
+websites = [
+    "http://www.google.com",
+    "https://www.google.com",
+    "http://accounts.google.com/signup",
+    "https://accounts.google.com/signup"
+]
+
+# Prepare sets to ensure uniqueness
+unique_proxies = set()
+http_proxies = set()
+https_proxies = set()
+socks5_proxies = set()
+
+# Function to process a single proxy
+def process_proxy(proxy):
+    proxy = proxy.strip()
+    if proxy in unique_proxies:
+        return None
+    unique_proxies.add(proxy)
+    
+    if proxy.startswith("http://"):
+        proxy = proxy[len("http://"):]
+        if check_http_proxy(proxy, websites):
+            http_proxies.add(proxy)
+    elif proxy.startswith("https://"):
+        proxy = proxy[len("https://"):]
+        if check_https_proxy(proxy, websites):
+            https_proxies.add(proxy)
+    else:
+        # Assume SOCKS5 if not HTTP/HTTPS
+        if check_socks5_proxy(proxy, websites):
+            socks5_proxies.add(proxy)
+
+# Use ThreadPoolExecutor to parallelize the checking
+with ThreadPoolExecutor(max_workers=10) as executor:
+    futures = [executor.submit(process_proxy, proxy) for proxy in proxies]
+    for future in as_completed(futures):
+        future.result()
+
+# Write accessible proxies to respective files
+with open("http.txt", "w") as file:
+    for proxy in http_proxies:
+        file.write(f"{proxy}\n")
+
+with open("https.txt", "w") as file:
+    for proxy in https_proxies:
+        file.write(f"{proxy}\n")
+
+with open("socks5.txt", "w") as file:
+    for proxy in socks5_proxies:
+        file.write(f"{proxy}\n")
+
+print("Accessible proxies without authentication have been saved to http.txt, https.txt, and socks5.txt")

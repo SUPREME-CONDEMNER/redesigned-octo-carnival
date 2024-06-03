@@ -1,6 +1,7 @@
 import requests
 import socket
 import socks
+from urllib.parse import urlparse
 
 # Function to check if an HTTP proxy is accessible without authentication for all websites
 def check_http_proxy(proxy, urls):
@@ -37,10 +38,12 @@ def check_socks5_proxy(proxy, urls):
         socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, ip, int(port))
         socket.socket = socks.socksocket
         for url in urls:
-            host, port = url.split(":")
+            parsed_url = urlparse(url)
+            host = parsed_url.hostname
+            port = parsed_url.port if parsed_url.port else (443 if parsed_url.scheme == 'https' else 80)
             s = socket.socket()
             s.settimeout(5)
-            s.connect((host, int(port)))
+            s.connect((host, port))
             s.sendall(b"GET / HTTP/1.1\r\nHost: " + host.encode() + b"\r\n\r\n")
             response = s.recv(4096)
             if b"200 OK" not in response:
@@ -61,13 +64,10 @@ else:
     proxies = []
 
 # List of websites to check
-websites_http = [
+websites = [
     "http://www.google.com",
-    "http://accounts.google.com/signup"
-]
-
-websites_https = [
     "https://www.google.com",
+    "http://accounts.google.com/signup",
     "https://accounts.google.com/signup"
 ]
 
@@ -86,15 +86,15 @@ for proxy in proxies:
     
     if proxy.startswith("http://"):
         proxy = proxy[len("http://"):]
-        if check_http_proxy(proxy, websites_http):
+        if check_http_proxy(proxy, websites):
             http_proxies.add(proxy)
     elif proxy.startswith("https://"):
         proxy = proxy[len("https://"):]
-        if check_https_proxy(proxy, websites_https):
+        if check_https_proxy(proxy, websites):
             https_proxies.add(proxy)
     else:
         # Assume SOCKS5 if not HTTP/HTTPS
-        if check_socks5_proxy(proxy, websites_http):
+        if check_socks5_proxy(proxy, websites):
             socks5_proxies.add(proxy)
 
 # Write accessible proxies to respective files

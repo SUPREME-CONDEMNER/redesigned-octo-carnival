@@ -30,25 +30,6 @@ def check_https_proxy(proxy, urls):
     except requests.exceptions.RequestException:
         return False
 
-# Function to check if a SOCKS4 proxy is accessible without authentication for all websites
-def check_socks4_proxy(proxy, urls):
-    try:
-        ip, port = proxy.split(":")
-        socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS4, ip, int(port))
-        socket.socket = socks.socksocket
-        for url in urls:
-            host, port = url.split(":")
-            s = socket.socket()
-            s.settimeout(5)
-            s.connect((host, int(port)))
-            s.sendall(b"GET / HTTP/1.1\r\nHost: " + host.encode() + b"\r\n\r\n")
-            response = s.recv(4096)
-            if b"200 OK" not in response:
-                return False
-        return True
-    except (socket.error, socks.ProxyError, socks.GeneralProxyError):
-        return False
-
 # Function to check if a SOCKS5 proxy is accessible without authentication for all websites
 def check_socks5_proxy(proxy, urls):
     try:
@@ -94,7 +75,6 @@ websites_https = [
 unique_proxies = set()
 http_proxies = set()
 https_proxies = set()
-socks4_proxies = set()
 socks5_proxies = set()
 
 # Check each proxy
@@ -113,10 +93,8 @@ for proxy in proxies:
         if check_https_proxy(proxy, websites_https):
             https_proxies.add(proxy)
     else:
-        # For SOCKS proxies, assume the format does not include "http://" or "https://"
-        if check_socks4_proxy(proxy, websites_http):
-            socks4_proxies.add(proxy)
-        elif check_socks5_proxy(proxy, websites_http):
+        # Assume SOCKS5 if not HTTP/HTTPS
+        if check_socks5_proxy(proxy, websites_http):
             socks5_proxies.add(proxy)
 
 # Write accessible proxies to respective files
@@ -128,12 +106,8 @@ with open("https.txt", "w") as file:
     for proxy in https_proxies:
         file.write(f"{proxy}\n")
 
-with open("socks4.txt", "w") as file:
-    for proxy in socks4_proxies:
-        file.write(f"{proxy}\n")
-
 with open("socks5.txt", "w") as file:
     for proxy in socks5_proxies:
         file.write(f"{proxy}\n")
 
-print("Accessible proxies without authentication have been saved to http.txt, https.txt, socks4.txt, and socks5.txt")
+print("Accessible proxies without authentication have been saved to http.txt, https.txt, and socks5.txt")

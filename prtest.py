@@ -19,7 +19,10 @@ proxy = Proxy()
 proxy.proxy_type = ProxyType.MANUAL
 proxy.http_proxy = f'{proxy_ip}:{proxy_port}'
 proxy.ssl_proxy = f'{proxy_ip}:{proxy_port}'
-proxy.add_to_capabilities(DesiredCapabilities.CHROME)
+
+# Add proxy to capabilities
+capabilities = DesiredCapabilities.CHROME.copy()
+proxy.add_to_capabilities(capabilities)
 
 # Chrome options setup
 chrome_options = webdriver.ChromeOptions()
@@ -30,7 +33,7 @@ chrome_options.add_argument('--disable-blink-features=AutomationControlled')
 service = Service(ChromeDriverManager().install())
 
 # Initialize the Chrome WebDriver with options and capabilities
-driver = webdriver.Chrome(service=service, options=chrome_options, desired_capabilities=DesiredCapabilities.CHROME)
+driver = webdriver.Chrome(service=service, options=chrome_options, desired_capabilities=capabilities)
 
 # Set up basic auth for the proxy
 driver.execute_cdp_cmd('Network.enable', {})

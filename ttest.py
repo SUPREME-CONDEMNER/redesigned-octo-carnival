@@ -26,3 +26,10 @@ service = Service(ChromeDriverManager().install())
 
 # Initialize the Chrome WebDriver with options
 driver = webdriver.Chrome(service=service, options=chrome_options)
+
+print("Browser is open. Press Ctrl+C to exit.")
+try:
+    while True:
+        pass  # Keep the script running
+except KeyboardInterrupt:
+    print("Exiting script...")

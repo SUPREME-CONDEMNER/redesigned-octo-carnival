@@ -1,3 +1,4 @@
+import base64
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.service import Service
@@ -40,7 +41,7 @@ driver.execute_cdp_cmd('Network.setExtraHTTPHeaders', {
 })
 
 # Navigate to a website to check the setup
-driver.get('https://www.google.com')
+driver.get('https://www.example.com')
 
 # Close the browser when done
 # driver.quit()

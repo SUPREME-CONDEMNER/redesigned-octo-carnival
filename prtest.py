@@ -22,7 +22,7 @@ proxy.ssl_proxy = f'{proxy_ip}:{proxy_port}'
 
 # Add proxy to capabilities
 capabilities = DesiredCapabilities.CHROME.copy()
-proxy.add_to_capabilities(capabilities)
+proxy.to_capabilities(capabilities)
 
 # Chrome options setup
 chrome_options = webdriver.ChromeOptions()

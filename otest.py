@@ -26,8 +26,3 @@ service = Service(ChromeDriverManager().install())
 
 # Initialize the Chrome WebDriver with options
 driver = webdriver.Chrome(service=service, options=chrome_options)
-
-# Navigate to a website to check the setup
-driver.get('https://accounts.google.com//signup')
-
-# Close the browser when done
